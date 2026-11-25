@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101820" />
+    <meta name="description" content="Aventura de plataforma 3D para navegador." />
+    <link rel="stylesheet" href="./src/styles/main.css" />
+    <title>Aventura 3D</title>
+  </head>
+  <body>
+    <main id="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">AVENTURA 3D · ETAPA 3</p>
+          <h1>Trilha de Treino</h1>
+        </div>
+        <div class="game-stats">
+          <p id="game-status" class="status">Carregando mundo…</p>
+          <p class="collectible-counter">Itens <strong id="collectible-count">0</strong></p>
+        </div>
+      </header>
+      <section class="game-frame" aria-label="Área do jogo">
+        <canvas id="game-canvas" aria-label="Jogo de plataforma 3D"></canvas>
+        <p id="game-error" class="game-error" role="alert" hidden></p>
+      </section>
+      <footer class="controls">
+        <span><kbd>W A S D</kbd> / <kbd>↑ ↓ ← →</kbd> mover</span>
+        <span><kbd>Espaço</kbd> saltar</span>
+        <span><kbd>Shift</kbd> correr</span>
+        <span><kbd>X</kbd> girar / quebrar</span>
+      </footer>
+    </main>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
