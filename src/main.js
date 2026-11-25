@@ -23,13 +23,17 @@ try {
 
   function showMenu(message = '') {
     screenMode = 'menu';
+    const continueLevel = LEVELS.find((level) => level.id <= progress.save.unlocked && !progress.save.completed.includes(level.id))
+      ?? LEVELS[progress.save.unlocked - 1]
+      ?? LEVELS[0];
+    const campaignAction = progress.save.completed.length ? 'Continuar campanha' : 'Iniciar campanha';
     const buttons = LEVELS.map((level) => {
       const unlocked = progress.isUnlocked(level.id);
       const completed = progress.save.completed.includes(level.id);
       const best = progress.save.bestItems[level.id];
       return `<button class="level-card ${unlocked ? '' : 'locked'}" data-level="${level.id}" ${unlocked ? '' : 'disabled'}><span>FASE ${String(level.id).padStart(2, '0')}</span><strong>${level.name}</strong><small>${completed ? `Concluída · melhor: ${best} itens` : unlocked ? 'Disponível' : 'Bloqueada'}</small></button>`;
     }).join('');
-    screen.innerHTML = `<div class="screen-card"><p class="eyebrow">AVENTURA 3D</p><h2>${message || 'Escolha sua próxima aventura'}</h2><p>Uma campanha de oito trilhas, ruínas e lugares secretos.</p><div class="level-grid">${buttons}</div></div>`;
+    screen.innerHTML = `<div class="screen-card"><p class="eyebrow">AVENTURA 3D</p><h2>${message || 'Escolha sua próxima aventura'}</h2><p>Uma campanha de oito trilhas, ruínas e lugares secretos.</p><div class="screen-actions menu-actions"><button class="primary-button" data-action="start" data-level="${continueLevel.id}">${campaignAction}</button></div><div class="level-grid">${buttons}</div></div>`;
     screen.hidden = false;
   }
 
@@ -59,9 +63,12 @@ try {
   screen.addEventListener('click', (event) => {
     const button = event.target.closest('button');
     if (!button) return;
-    if (button.dataset.level) startLevel(Number(button.dataset.level));
-    if (button.dataset.action === 'menu') showMenu();
-    if (button.dataset.action === 'next') startLevel(Number(button.dataset.level));
+    const { action, level } = button.dataset;
+    if (action === 'menu') {
+      showMenu();
+      return;
+    }
+    if (action === 'start' || action === 'next' || level) startLevel(Number(level));
   });
 
   screen.addEventListener('keydown', (event) => {

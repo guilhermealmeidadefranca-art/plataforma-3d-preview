@@ -12,6 +12,10 @@ python3 -m http.server 5173
 
 Depois abra `http://localhost:5173` no navegador. O servidor HTTP é necessário porque o navegador restringe módulos JavaScript carregados diretamente por `file://`.
 
+## Verificações automatizadas
+
+Execute `node --test tests/stage4.test.mjs` para verificar física básica, objetos, coleta, câmera e progressão da campanha.
+
 ## Organização
 
 - `src/core/`: ciclo do jogo, renderer WebGL, entrada, recursos, áudio e salvamento.
