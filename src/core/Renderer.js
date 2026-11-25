@@ -106,12 +106,12 @@ export class Renderer {
     perspective(this.projection, Math.PI / 3, width / height, 0.1, 120);
   }
 
-  begin(cameraPosition, target) {
+  begin(cameraPosition, target, skyColor = [0.42, 0.72, 0.86]) {
     const gl = this.gl;
     this.resize();
     lookAt(this.view, cameraPosition, target);
     multiply(this.viewProjection, this.projection, this.view);
-    gl.clearColor(0.42, 0.72, 0.86, 1);
+    gl.clearColor(skyColor[0], skyColor[1], skyColor[2], 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(this.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.cube.buffer);

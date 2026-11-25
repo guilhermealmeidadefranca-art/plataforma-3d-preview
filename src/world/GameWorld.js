@@ -3,18 +3,20 @@ import { Crate } from '../objects/Crate.js';
 import { Collectible } from '../objects/Collectible.js';
 import { MovingHazard } from '../objects/MovingHazard.js';
 import { canStomp, horizontalDistance, overlapsHazard } from './CollisionSystem.js';
-import { LEVEL_01 } from '../levels/Level01.js';
+import { getLevel } from '../levels/Levels.js';
 import { Player } from '../player/Player.js';
 
 export class GameWorld {
-  constructor() {
+  constructor(levelId = 1) {
+    this.level = getLevel(levelId);
     this.player = new Player();
-    this.platforms = LEVEL_01.platforms;
-    this.crates = LEVEL_01.crates.map((definition) => new Crate(definition));
-    this.collectibles = LEVEL_01.collectibles.map((definition) => new Collectible(definition.position));
-    this.enemies = LEVEL_01.enemies.map((definition) => new Enemy(definition));
-    this.hazards = LEVEL_01.hazards.map((definition) => new MovingHazard(definition));
+    this.platforms = this.level.platforms;
+    this.crates = this.level.crates.map((definition) => new Crate(definition));
+    this.collectibles = this.level.collectibles.map((definition) => new Collectible(definition.position));
+    this.enemies = this.level.enemies.map((definition) => new Enemy(definition));
+    this.hazards = this.level.hazards.map((definition) => new MovingHazard(definition));
     this.collectibleCount = 0;
+    this.completed = false;
     this.time = 0;
     this.message = '';
     this.messageTime = 0;
@@ -58,12 +60,19 @@ export class GameWorld {
   }
 
   update(delta, input) {
+    if (this.completed) return;
     this.time += delta;
     this.messageTime = Math.max(0, this.messageTime - delta);
     const previousY = this.player.position.y;
     const previousVelocityY = this.player.velocity.y;
     const solidCrates = this.crates.filter((crate) => !crate.broken);
     this.player.update(delta, input, this.platforms, solidCrates);
+    if (this.player.position.y < -8) {
+      this.player.position = { x: 0, y: 0, z: 3 };
+      this.player.velocity = { x: 0, y: 0, z: 0 };
+      this.player.grounded = true;
+      this.notify('Você caiu. Tente outra vez!');
+    }
 
     if (input.pressed('KeyX')) {
       this.player.triggerAttack();
@@ -101,6 +110,10 @@ export class GameWorld {
         this.notify('Desvie do perigo móvel!');
       }
     }
+    if (this.player.position.z <= this.level.finishZ && Math.abs(this.player.position.x - this.level.finishX) < 1.8 && this.player.position.y < 2.5) {
+      this.completed = true;
+      this.notify('Fase concluída!');
+    }
   }
 
   get status() {
@@ -110,10 +123,16 @@ export class GameWorld {
 
   draw(renderer, time) {
     for (const platform of this.platforms) renderer.drawBox(platform.position, platform.size, platform.color);
-    renderer.drawBox([-7, 1.2, -20], [1.5, 1.2, 1.5], [0.18, 0.42, 0.27]);
-    renderer.drawBox([7, 0.7, -17], [2, 0.7, 2], [0.2, 0.45, 0.29]);
-    renderer.drawBox([-7, 2.5, -20], [2.4, 1.5, 2.4], [0.28, 0.56, 0.31]);
-    renderer.drawBox([7, 1.7, -17], [3, 1.2, 3], [0.32, 0.6, 0.35]);
+    for (let side = -1; side <= 1; side += 2) {
+      for (let i = 0; i < 5; i += 1) {
+        const z = -4 - i * 8;
+        renderer.drawBox([side * (7.5 + (i % 2)), 1.2 + (i % 2) * 0.3, z], [1.5, 1.2 + (i % 2) * 0.3, 1.5], this.level.theme.side);
+        renderer.drawBox([side * (7.5 + (i % 2)), 2.4 + (i % 2) * 0.3, z], [2.1, 1.5, 2.1], this.level.theme.platform);
+      }
+    }
+    renderer.drawBox([this.level.finishX, 1.1, this.level.finishZ], [0.2, 1.1, 0.2], [0.95, 0.8, 0.2]);
+    renderer.drawBox([this.level.finishX - 0.7, 1.1, this.level.finishZ], [0.12, 1.1, 0.12], [0.2, 0.9, 0.72]);
+    renderer.drawBox([this.level.finishX + 0.7, 1.1, this.level.finishZ], [0.12, 1.1, 0.12], [0.2, 0.9, 0.72]);
     for (const hazard of this.hazards) hazard.draw(renderer);
     for (const crate of this.crates) crate.draw(renderer);
     for (const enemy of this.enemies) enemy.draw(renderer);

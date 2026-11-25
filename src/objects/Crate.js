@@ -1,8 +1,9 @@
 export class Crate {
-  constructor({ position, drops = 1 }) {
+  constructor({ position, drops = 1, color = [0.62, 0.34, 0.14] }) {
     this.position = [...position];
     this.halfSize = 0.5;
     this.drops = drops;
+    this.color = color;
     this.broken = false;
     this.breakAge = 0;
     this.fragments = [];
@@ -33,7 +34,7 @@ export class Crate {
 
   draw(renderer) {
     if (!this.broken) {
-      renderer.drawBox(this.position, [0.5, 0.5, 0.5], [0.62, 0.34, 0.14]);
+      renderer.drawBox(this.position, [0.5, 0.5, 0.5], this.color);
       renderer.drawBox([this.position[0], this.position[1], this.position[2] - 0.51], [0.12, 0.38, 0.025], [0.84, 0.58, 0.25]);
       renderer.drawBox([this.position[0], this.position[1], this.position[2] + 0.51], [0.12, 0.38, 0.025], [0.84, 0.58, 0.25]);
       return;

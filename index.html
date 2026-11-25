@@ -12,8 +12,8 @@
     <main id="app">
       <header class="topbar">
         <div>
-          <p class="eyebrow">AVENTURA 3D · ETAPA 3</p>
-          <h1>Trilha de Treino</h1>
+          <p class="eyebrow">AVENTURA 3D · CAMPANHA</p>
+          <h1 id="level-name">Trilha de Treino</h1>
         </div>
         <div class="game-stats">
           <p id="game-status" class="status">Carregando mundo…</p>
@@ -23,6 +23,7 @@
       <section class="game-frame" aria-label="Área do jogo">
         <canvas id="game-canvas" aria-label="Jogo de plataforma 3D"></canvas>
         <p id="game-error" class="game-error" role="alert" hidden></p>
+        <section id="campaign-screen" class="campaign-screen" aria-live="polite"></section>
       </section>
       <footer class="controls">
         <span><kbd>W A S D</kbd> / <kbd>↑ ↓ ← →</kbd> mover</span>
